@@ -25,7 +25,7 @@
                         <span class="input-group-text material-icons px-1 text-black-50">
                             outlined_flag
                         </span>
-                        <select id="country" class="form-select" aria-label="Default select example">
+                        <select class="form-select country-selector" aria-label="Default select example">
                             <option value="ru" selected>Russia</option>
                             <option value="us">USA</option>
                             <option value="ca">Canada</option>                        
@@ -36,7 +36,7 @@
 
                 <div class="mx-1">
                     <div class="input-group">
-                        <input class="form-control" type="search" placeholder="Search">
+                        <input class="form-control input-search" type="search" placeholder="Search">
                         <button class="btn btn-primary btn-search" type="submit"><span class="material-icons">search</span></button>
                     </div>                        
                 </div>
@@ -47,20 +47,22 @@
     </div>
 
     <div class="container">
-        <div class="row justify-content-center">
 
-            <div class="col-12 col-md-6 col-xl-4 my-2">
-              <div class="card h-100">
-                <img src="https://www.tibs.org.tw/images/default.jpg" class="card-img-top" alt="Default image">
-                <div class="card-body">
-                  <h5 class="card-title">News title</h5>
-                  <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="border-top pt-3">
-                      <a href="#" class="btn btn-warning">Read more</a>
-                  </div>
+        <div class="spinner-container d-none">
+
+            <div class="d-flex justify-content-center my-5">
+                <div class="spinner-border text-primary" role="status">
+                <span class="sr-only"></span>
                 </div>
-              </div>
-            </div>            
+            </div>
+
+        </div>
+
+        
+
+        <div class="row justify-content-center news-container">
+
+
 
         </div>
     </div>
