@@ -20,9 +20,10 @@ const countrySelect = form.elements['country'];
 const searchInput = form.elements['search'];
 const spinnerContainer = document.querySelector('.spinner-container');
 const newsContainer = document.querySelector('.news-container');
+const toastContainer = document.querySelector('.toast-container');
 
 //Events
-document.addEventListener('DOMContentLoaded', e => { 
+document.addEventListener('DOMContentLoaded', e => {
   loadNews();
 });
 
@@ -100,36 +101,38 @@ function loadNews() {
   const query = searchInput.value;
   searchInput.value = '';
 
-  clearNewsContainer();
-
   addSpinner();  
   
   if(!query) {
     newsService.topHeadlines(country, onGetResponse);
-    console.log('topHead - ', country);
   } else {
     newsService.everything(query, onGetResponse);
-    console.log('everything - ', query);
-  }  
-
+  }
 }
 
-function onGetResponse(err, res) {
-  if!err) {
-
+function onGetResponse(err, res) { 
+  delSpinner();
+  
+  if(err) {
+    showMessage(err, 'bg-danger');
+    return;
   }
+  if(!res.articles.length) {
+    const msg = 'No news on the selected topic';
+    showMessage(msg, 'bg-warning');
+    return;
+  }
+
   renderNews(res.articles);
 }
 
 function renderNews(news) {
+  clearNewsContainer();
 
   news.forEach(newsItem => {
     const el = newsTemplate(newsItem);
     newsContainer.insertAdjacentHTML('afterbegin', el);
   });
-
-  delSpinner();
-
 }
 
 function addSpinner() {
@@ -148,8 +151,14 @@ function clearNewsContainer() {
 
 }
 
-function showMessage() {
+function showMessage(msg, type = 'bg-primary') {
+  const toastId = `f${(+new Date).toString(16)}`;
+  const element = toastTemplate(toastId, msg, type);
+  toastContainer.insertAdjacentHTML('afterbegin', element);
 
+  const toastElement = document.getElementById(toastId);
+  const toast = new bootstrap.Toast(toastElement);
+  toast.show();
 }
 
 function newsTemplate({ urlToImage, title, description, url}) {
@@ -164,6 +173,19 @@ function newsTemplate({ urlToImage, title, description, url}) {
         <div class="card-footer pt-3">
               <a href="${url}" class="btn btn-warning">Read more</a>
           </div>
+      </div>
+    </div>
+  `;
+}
+
+function toastTemplate(id, msg, type) {
+  return `
+    <div class="toast ${type} align-items-center text-white border-0" id="${id}" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">
+          ${msg}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
   `;
