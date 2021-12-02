@@ -11,3 +11,13 @@
     white-space: nowrap;
     direction: ltr;
 }
+
+.form-control:focus {
+    border-color: #ced4da;
+    box-shadow: none;
+}
+
+.form-select:focus {
+    border-color: #ced4da;
+    box-shadow: none;
+}

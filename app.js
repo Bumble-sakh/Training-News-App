@@ -1,3 +1,42 @@
+const http = customHttp();
+
+const newsService = (function() {
+  const apiKey = '5c2b80530ab74210ae5ab70922bb63a4';
+  const apiUrl = 'https://newsapi.org/v2/';
+
+  return {
+    topHeadlines(country = 'ru', cb) {
+      http.get(`${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`, cb);
+    },
+    everything(query, cb) {
+      http.get(`${apiUrl}/everything?q=${query}&apiKey=${apiKey}`, cb);
+    },
+  }
+})();
+
+//UI
+const form = document.forms['newsControls'];
+const countrySelect = form.elements['country'];
+const searchInput = form.elements['search'];
+const spinnerContainer = document.querySelector('.spinner-container');
+const newsContainer = document.querySelector('.news-container');
+
+//Events
+document.addEventListener('DOMContentLoaded', e => { 
+  loadNews();
+});
+
+countrySelect.addEventListener('change', e => {
+    country = countrySelect.value;
+    loadNews();
+});
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  countrySelect.value = '';
+  loadNews();
+});
+
 function customHttp() {
     return {
       get(url, cb) {
@@ -56,97 +95,76 @@ function customHttp() {
     }
   }
 
-function getCountry () {    
-    const index = countrySelector.selectedIndex;
-    const country = countrySelector[index].value;
-    return country;
-}
-
-function getQuery () {    
-  const searchStr = inputSearch.value;
-  inputSearch.value = '';
-  return searchStr;
-}
-
 function loadNews() {
-  newsService.topHeadlines(country, onGetResponse);
+  const country = countrySelect.value;
+  const query = searchInput.value;
+  searchInput.value = '';
+
+  clearNewsContainer();
+
+  addSpinner();  
+  
+  if(!query) {
+    newsService.topHeadlines(country, onGetResponse);
+    console.log('topHead - ', country);
+  } else {
+    newsService.everything(query, onGetResponse);
+    console.log('everything - ', query);
+  }  
+
 }
 
 function onGetResponse(err, res) {
+  if!err) {
 
+  }
   renderNews(res.articles);
-  
-  
 }
 
 function renderNews(news) {
-//Del Spinner
-  const newsContainer = document.querySelector('.news-container')
 
   news.forEach(newsItem => {
     const el = newsTemplate(newsItem);
     newsContainer.insertAdjacentHTML('afterbegin', el);
   });
 
+  delSpinner();
+
 }
 
-function newsTemplate(news) {
-  console.log(news);
+function addSpinner() {
+  spinnerContainer.classList.remove('d-none');
+}
+
+function delSpinner() {
+  spinnerContainer.classList.add('d-none');
+}
+
+function clearNewsContainer() {
+
+  while (newsContainer.children.length) {
+    newsContainer.removeChild(newsContainer.firstChild)
+  }
+
+}
+
+function showMessage() {
+
+}
+
+function newsTemplate({ urlToImage, title, description, url}) {
   return `
     <div class="col-12 col-md-6 col-xl-4 my-2">
       <div class="card h-100">
-        <img src="${news.urlToImage}" class="card-img-top"  style="height: 18rem; alt="News image">
+        <img src="${urlToImage}" class="card-img-top"  style="height: 18rem; alt="News image">
         <div class="card-body">
-          <h5 class="card-title">${news.title}</h5>
-          <p class="card-text">${news.description}</p>
+          <h5 class="card-title">${title}</h5>
+          <p class="card-text">${description}</p>
         </div>
         <div class="card-footer pt-3">
-              <a href="${news.url}" class="btn btn-warning">Read more</a>
+              <a href="${url}" class="btn btn-warning">Read more</a>
           </div>
       </div>
     </div>
   `;
 }
-
-//UI
-const countrySelector = document.querySelector('.country-selector');
-const btnSearch = document.querySelector('.btn-search');
-const inputSearch = document.querySelector('.input-search');
-const spinnerContainer = document.querySelector('.spiner-container');
-
-
-//Variable
-let country = getCountry();
-let query = getQuery();
-
-//Events
-document.addEventListener('DOMContentLoaded', e => {
-  //Add Spinner
-  loadNews();
-});
-countrySelector.addEventListener('change', e => {
-    country = getCountry();
-});
-btnSearch.addEventListener('click', e => {
-  let query = getQuery();
-});
-inputSearch.addEventListener('keyup', e => {
-  e.keyCode === 13 ? btnSearch.click() : null;
-});
-
-
-const http = customHttp();
-
-const newsService = (function() {
-  const apiKey = '5c2b80530ab74210ae5ab70922bb63a4';
-  const apiUrl = 'https://newsapi.org/v2/';
-
-  return {
-    topHeadlines(country = 'ru', cb) {
-      http.get(`${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`, cb);
-    },
-    everything(query, cb) {
-      http.get(`${apiUrl}/everything?q=${query}&apiKey=${apiKey}`, cb);
-    },
-  }
-})();
