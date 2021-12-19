@@ -2,10 +2,10 @@ const http = customHttp()
 
 const newsService = (function () {
   const apiKey = '5c2b80530ab74210ae5ab70922bb63a4'
-  const apiUrl = 'https://newsapi.org/v2/'
+  const apiUrl = 'https://news-api-v2.herokuapp.com'
 
   return {
-    topHeadlines(country = 'ru', cb) {
+    topHeadlines(country = 'us', cb) {
       http.get(
         `${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`,
         cb
